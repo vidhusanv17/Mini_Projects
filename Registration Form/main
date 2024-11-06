@@ -1,0 +1,161 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class RegistrationForm {
+
+    // Database credentials
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/user_registration"; // Update with your DB URL
+    private static final String USER = "root"; // Replace with your DB username
+    private static final String PASS = "admin"; // Replace with your DB password
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("User  Registration");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 400);
+
+        // Create a custom JPanel with gradient background
+        JPanel panel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                GradientPaint gradient = new GradientPaint(0, 0, Color.PINK, 0, getHeight(), Color.CYAN);
+                g2d.setPaint(gradient);
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+            }
+        };
+        panel.setLayout(new GridLayout(12, 2));
+
+        // Create a bold font with a different style
+        Font font = new Font("Verdana", Font.BOLD, 16);
+
+        // Create form fields with increased and bold font size
+        JLabel firstNameLabel = new JLabel("First Name:");
+        firstNameLabel.setFont(font);
+        JTextField firstNameField = new JTextField();
+        firstNameField.setFont(font);
+
+        JLabel lastNameLabel = new JLabel("Last Name:");
+        lastNameLabel.setFont(font);
+        JTextField lastNameField = new JTextField();
+        lastNameField.setFont(font);
+
+        JLabel usernameLabel = new JLabel("Username:");
+        usernameLabel.setFont(font);
+        JTextField usernameField = new JTextField();
+        usernameField.setFont(font);
+
+        JLabel passwordLabel = new JLabel("Password:");
+        passwordLabel.setFont(font);
+        JPasswordField passwordField = new JPasswordField();
+        passwordField.setFont(font);
+
+        JLabel confirmPasswordLabel = new JLabel("Confirm Password:");
+        confirmPasswordLabel.setFont(font);
+        JPasswordField confirmPasswordField = new JPasswordField();
+        confirmPasswordField.setFont(font);
+
+        JLabel emailLabel = new JLabel("Email:");
+        emailLabel.setFont(font);
+        JTextField emailField = new JTextField();
+        emailField.setFont(font);
+
+        JLabel phoneLabel = new JLabel("Phone Number:");
+        phoneLabel.setFont(font);
+        JTextField phoneField = new JTextField();
+        phoneField.setFont(font);
+
+        JLabel addressLabel = new JLabel("Address:");
+        addressLabel.setFont(font);
+        JTextField addressField = new JTextField();
+        addressField.setFont(font);
+
+        JLabel cityLabel = new JLabel("City:");
+        cityLabel.setFont(font);
+        JTextField cityField = new JTextField();
+        cityField.setFont(font);
+
+        JLabel countryLabel = new JLabel("Country:");
+        countryLabel.setFont(font);
+        JTextField countryField = new JTextField();
+        countryField.setFont(font);
+
+        JButton submitButton = new JButton("Register");
+        submitButton.setFont(font);
+
+        // Add components to the panel
+        panel.add(firstNameLabel);
+        panel.add(firstNameField);
+        panel.add(lastNameLabel);
+        panel.add(lastNameField);
+        panel.add(usernameLabel);
+        panel.add(usernameField);
+        panel.add(passwordLabel);
+        panel.add(passwordField);
+        panel.add(confirmPasswordLabel);
+        panel.add(confirmPasswordField);
+        panel.add(emailLabel);
+        panel.add(emailField);
+        panel.add(phoneLabel);
+        panel.add(phoneField);
+        panel.add(addressLabel);
+        panel.add(addressField);
+        panel.add(cityLabel);
+        panel.add(cityField);
+        panel.add(countryLabel);
+        panel.add(countryField);
+        panel.add(submitButton);
+
+        // Action listener for the submit button
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Handle form submission logic here
+                String firstName = firstNameField.getText();
+                String lastName = lastNameField.getText();
+                String username = usernameField.getText();
+                String password = String.valueOf(passwordField.getPassword());
+                String email = emailField.getText();
+                String phoneNumber = phoneField.getText();
+                String address = addressField.getText();
+                String city = cityField.getText();
+                String country = countryField.getText();
+                JOptionPane.showMessageDialog(frame, "Registration Successful!");
+
+                // Insert data into the database
+                try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+                     PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO users (first_name, last_name, username, password, email, phone_number, address, city, country) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+
+                    preparedStatement.setString(1, firstName);
+                    preparedStatement.setString(2, lastName);
+                    preparedStatement.setString(3, username);
+                    preparedStatement.setString(4, password);
+                    preparedStatement.setString(5, email);
+                    preparedStatement.setString(6, phoneNumber);
+                    preparedStatement.setString(7, address);
+                    preparedStatement.setString(8, city);
+                    preparedStatement.setString(9, country);
+
+                    int rowsAffected = preparedStatement.executeUpdate();
+                    if (rowsAffected > 0) {
+                        JOptionPane.showMessageDialog(frame, "Registration Successful!");
+                    } else {
+                        JOptionPane.showMessageDialog(frame, "Registration Failed!");
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        frame.add(panel); // Add the panel to the frame
+        frame.setVisible(true);
+    }
+}
+
